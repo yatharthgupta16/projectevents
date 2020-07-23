@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="file:///Users/yatharthgupta/projectevents/frontend/main.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EVENTS</title>
+  </head>
+  
+<!--  <style>
+    table,th,td {
+      border : 1px solid black;
+      border-collapse: collapse;
+    }
+    th,td {
+      padding: 5px;
+    }
+    </style>
+-->
+
+  <body style="background-color: lightblue">
+      <!-- section 1  -->
+    <div class="section" style="background-color: lightgreen;">
+        <h2>Add Interests</h2>
+        <div>
+            <form id="ajax-contact" method="post"
+            style="
+                margin-top: 40px;
+                display: flex;
+                justify-content: space-around;
+            "
+            >
+            <!-- <label for="userid">userid</label>
+            <input type="number" id= "userid" name = "userid" style="margin-left: 20px;" /> -->
+
+            <label for="type" style="margin-left: 20px;">Type</label>
+            <input type="text" id= "type" name = "type" style="margin-left: 20px;" />
+            
+            <label for="subtype" style="margin-left: 20px;">SubType</label>
+            <input type="text" id= "subtype" name = "subtype" placeholder = "abv" style="margin-left: 20px;" />
+            
+            <button
+                type="button"
+                style="width: 100px; margin-left: 20px;"
+                class="btn"
+                onclick="loadDoc()"
+            >
+                Add
+            </button>
+            </form>
+        </div>
+        </div>
+      <!-- section 2 --> 
+        <div class="section">
+        <h2>Events in area</h2>
+        <div>
+          <label for="location">location:</label>
+
+          <select name="location" id="location">
+            <option value="gurgaon">gurgaon</option>
+            <option value="bangalore">bangalore</option>
+            <option value="mumbai">mumbai</option>
+            <option value="chennai">chennai</option>
+            <option value="pune">pune</option>
+            <option value="panaji">panaji</option>
+            <option value="kolkata">kolkata</option>
+          </select>
+        </div>
+        <div>
+          <label for="interests">interests:</label>
+
+          <select name="interests" id="interests">
+            <option value="dancing">dancing</option>
+            <option value="art">art</option>
+            <option value="music">music</option>
+            <option value="biking">biking</option>
+            <option value="drawing">drawing</option>
+          </select>
+        </div>
+        <button
+                type="button"
+                style="width: 100px; margin-left: 20px;"
+                class="btn"
+                onclick="loadLocationInterest()"
+            >
+                Find
+            </button>
+        </div>  
+     <!--   section 3  -->
+      <div class="section" style="background-color: orange;">
+        <h3>Find Registered events</h3>
+        <button
+                type="button"
+                style="width: 100px; margin-left: 20px;"
+                class="btn"
+                onclick="loaduserEvents()"
+            >
+                Find
+            </button>
+            <table id="demo"></table>
+      </div>
+      <!-- section 4 -->
+      <div class="section" style="background-color: lightyellow;" id="#data">
+        <!-- <h3>List of events happening as per the inputs</h3> -->
+        <style>p.clear{
+          clear:initial;
+        }</style>
+      </div>
+
+    <script>
+
+        function loadDoc() {
+            console.log('hello');
+        //    const userid = parseInt(document.getElementById('userid').value);
+            const type = document.getElementById('type').value;
+            const subtype = document.getElementById('subtype').value;
+    //---------------------
+            var json = JSON.stringify({
+                //  userid:`${userid}`,
+                  type: `${type}`,
+                  subtype:`${subtype}`
+            });
+    
+          var xhttp = new XMLHttpRequest();
+          xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+              //document.getElementById("users").innerHTML =
+              //this.responseText;
+              console.log("hello xhttp")
+            }
+          };
+          xhttp.open("POST", "http://localhost:3001/api/userinterests/1", true);
+          xhttp.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+          xhttp.send(json);
+        }
+
+
+        function loaduserEvents() {
+             
+        var data = "";
+
+          var xhr = new XMLHttpRequest();
+        //xhr.withCredentials = true;
+
+        xhr.addEventListener("readystatechange", function() {
+          if(this.readyState === 4) {
+            console.log("entered")
+            console.log(this.responseText);
+
+            var k= (JSON.parse(this.responseText));
+            console.log("printing kays")
+            console.log(k);   
+           
+          for(var i=0; i<k.length;i++){
+              var li=document.createElement('div');
+              li.className='column';
+              //url = "./dance.jpeg"
+              li.innerHTML=`<div class ="card" id="card1">
+                                  <p class = ="test" margin-left = 20px>Eventname: `+k[i].eventname+`<br>
+                                    
+                                        ticketprice: `+k[i].ticketprice+`<br>
+                                        description: `+k[i].description+`
+                                  </p>
+                              </div>`;   
+              var list = document.getElementById("#data");
+              list.insertBefore(li, list.childNodes[0]);
+              }
+            
+          }
+        });
+
+        xhr.open("GET", "http://localhost:3001/api/userevents/2");
+
+        xhr.send(data);
+      
+    }
+
+
+
+        function loadLocationInterest() {
+         // console.clear();
+            console.log('hello');
+        //    const userid = parseInt(document.getElementById('userid').value);
+            const location = document.getElementById('location').value;
+            const interests = document.getElementById('interests').value;
+            console.log(location)
+            console.log(interests)
+    //---------------------
+            var json = {
+                  cityname: `${location}`,
+                  interest:`${interests}`
+            };
+            console.log(json);
+    
+        var data = "";
+
+var xhr = new XMLHttpRequest();
+//xhr.withCredentials = true;
+
+xhr.addEventListener("readystatechange", function() {
+  if(this.readyState === 4) {
+    console.log(this.responseText);
+
+
+
+var k= (JSON.parse(this.responseText));
+          //console.log(k);   
+          for(var i=0; i<k.length;i++){
+              var li=document.createElement('div');
+              var iiid = k[i].id;
+              var idstr = iiid.toString();
+              console.log(iiid+ idstr + typeof(idstr));
+              li.className='column';
+              li.innerHTML=`<div class ="card" id="card1">
+                                  <p margin-left = 20px;>Eventname: `+k[i].eventname+`<br>
+                                    
+                                        ticketprice: `+k[i].ticketprice+`<br>
+                                        description: `+k[i].description+`
+                                      </p>
+                                   <a href="./register.html?`+idstr+`" type="button" class="block">
+                Register
+            </a>
+                                  </p>
+                              </div>`;   
+              var list = document.getElementById("#data");
+              list.insertBefore(li, list.childNodes[0]);
+              }
+
+
+
+    // document.getElementById('#data').innerHTML = this.responseText;
+  }
+});
+const urll = "http://localhost:3001/api/cityinterests?cityname="+location+"&interest="+interests;
+console.log(urll)
+xhr.open("GET", urll);
+
+xhr.send(data);
+        }
+
+        
+    function loadRegisterEvents(iid) {
+      var data = "";
+
+      var xhr = new XMLHttpRequest();
+     // xhr.withCredentials = true;
+     // console.log(k[i].id);
+      xhr.addEventListener("readystatechange", function() {
+        if(this.readyState === 4) {
+          console.log("Entered Registered events");
+          console.log(this.responseText);
+        }
+      });
+      const urll = "http://localhost:3001/api/registerevent/" + iid;
+      xhr.open("POST", urll);
+
+      xhr.send(data);
+    }
+
+
+
+        </script>
+
+  </body>
+
+  
+
+</html>
